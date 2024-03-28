@@ -38,7 +38,13 @@ def csv_to_object(file_name: str) -> list[Movie]:
     output_lst = []
     with open(file_name, 'r') as file:
         reader = csv.reader(file)
+        next(reader)
         for row in reader:
-            m = Movie(row)
+            title = row[1]
+            release_year = int(row[2])
+            age_rate = row[3]
+            runtime = int(row[4].split()[0])
+            imdb_rat
+
 
     return output_lst
