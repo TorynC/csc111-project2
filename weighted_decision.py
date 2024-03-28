@@ -228,11 +228,11 @@ def build_decision_tree(file: str) -> Tree:
 
 
 MOVIE_QUESTIONS = [
-    'What is your age?',
     'What is your preferred running time for movies?',
-    'Any preferred directors?',
     'What year do you prefer movies from?',
     'Any preferred genre from the list?',
+    'Any preferred directors?',
+    'Any preferred actors?'
 ]
 
 
