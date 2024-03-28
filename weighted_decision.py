@@ -236,6 +236,13 @@ def build_decision_tree(file: str) -> Tree:
             row.pop(3)
             row.pop(0)
             row.append(row.pop(0))
+
+            year = int(row[0]) - (int(row[0]) % 10)
+            runtime = int(row[0][:-4])
+
+
+
+
             tree.insert_sequence(row)
 
 
@@ -243,8 +250,8 @@ def build_decision_tree(file: str) -> Tree:
 
 
 MOVIE_QUESTIONS = [
-    'What is your preferred running time for movies?',
     'What year do you prefer movies from?',
+    'What is your preferred running time for movies?',
     'Any preferred genre from the list?',
     'Any preferred directors?',
     'Any preferred actors?'
