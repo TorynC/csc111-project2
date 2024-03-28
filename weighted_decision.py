@@ -227,8 +227,17 @@ def build_decision_tree(file: str) -> Tree:
         next(reader)
 
         for row in reader:
+            row.pop(16)
+            row.pop(15)
+            row.pop(9)
+            row.pop(8)
+            row.pop(7)
+            row.pop(6)
+            row.pop(3)
+            row.pop(0)
             row.append(row.pop(0))
             tree.insert_sequence(row)
+
 
     return tree
 
@@ -268,3 +277,5 @@ def recommendation_system(movie_file: str) -> None:    # Can be used for the tes
     else:
         for movie in tree_so_far.subtrees:
             print(movie)
+
+def
