@@ -250,12 +250,13 @@ def build_decision_tree(file: str) -> Tree:
 
             genre = row[2].split(", ")
 
+            director = row[3]
 
-            tree.insert_sequence([year, runtime, genre, director, actor])
+            actor = [row[4], row[5], row[6], row[7]]
 
-            # tree.insert_sequence(row)
-
-
+            for g in genre:
+                for a in actor:
+                    tree.insert_sequence([year, runtime, g, director, a])
 
     return tree
 
