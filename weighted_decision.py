@@ -237,8 +237,8 @@ def build_decision_tree(file: str) -> Tree:
             row.pop(0)
             row.append(row.pop(0))
 
-<<<<<<< HEAD
             year = int(row[0]) - (int(row[0]) % 10)
+
             runtime = int(row[0][:-4])
 
 
