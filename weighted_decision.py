@@ -1,5 +1,6 @@
 """"CSC111 Project 2:
 """
+from __future__ import annotations
 import csv
 from typing import Any, Optional
 
@@ -227,24 +228,51 @@ def build_decision_tree(file: str) -> Tree:
         next(reader)
 
         for row in reader:
-            row.pop(16)
             row.pop(15)
-            row.pop(9)
+            row.pop(14)
             row.pop(8)
             row.pop(7)
             row.pop(6)
             row.pop(3)
             row.pop(0)
             row.append(row.pop(0))
+
+            year = int(row[0]) - (int(row[0]) % 10)
+
+            runtime = int(row[0][:-4])
+
+
+
+
             tree.insert_sequence(row)
+=======
+            year = int(row[0]) - (int(row[0]) % 10) # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
+
+            runtime = int(row[1][:-4])
+
+            i = 1
+            while True:     # 0 ~ 59, 60 ~ 119, 120 ~ 179, 180 ~ 239, 240 ~ 299, 300 ~ 359...
+                if runtime - (60 * i) < 0:
+                    runtime = 60 * (i - 1)
+                    break
+                i += 1
+
+            genre = row[2].split(", ")
+
+
+            tree.insert_sequence([year, runtime, genre, director, actor])
+
+            # tree.insert_sequence(row)
+
+>>>>>>> 9830f58566283c7d8ad1b182932bdf9d07ea6e13
 
 
     return tree
 
 
 MOVIE_QUESTIONS = [
-    'What is your preferred running time for movies?',
     'What year do you prefer movies from?',
+    'What is your preferred running time for movies?',
     'Any preferred genre from the list?',
     'Any preferred directors?',
     'Any preferred actors?'
@@ -277,5 +305,3 @@ def recommendation_system(movie_file: str) -> None:    # Can be used for the tes
     else:
         for movie in tree_so_far.subtrees:
             print(movie)
-
-def
