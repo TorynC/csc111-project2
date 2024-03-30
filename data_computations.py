@@ -1,5 +1,6 @@
 """."""
 import csv
+from typing import Optional
 
 
 class Movie:
@@ -9,7 +10,7 @@ class Movie:
     release_year: int
     age_rate: str
     imdb_rating: float
-    meta_score: int
+    meta_score: Optional[int]
     runtime: int
     genre: set[str]
     description: str
@@ -44,7 +45,15 @@ def csv_to_object(file_name: str) -> list[Movie]:
             release_year = int(row[2])
             age_rate = row[3]
             runtime = int(row[4].split()[0])
-            imdb_rat
-
+            imdb_rating = float(row[6])
+            description = row[7]
+            metascore = int(row[8])
+            director = row[9]
+            stars = {row[10], row[11], row[12], row[13]}
+            genre = set(row[5].split())
+            gross = int(row[15])
+            output_lst.append(
+                Movie(title, release_year, age_rate, imdb_rating, metascore, runtime, genre, description, director,
+                      stars, gross))
 
     return output_lst
