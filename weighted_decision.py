@@ -237,7 +237,11 @@ def build_decision_tree(file: str) -> Tree:
             row.pop(0)
             row.append(row.pop(0))
 
-            year = int(row[0]) - (int(row[0]) % 10) # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
+            year = int(row[0]) - (int(row[0]) % 10)
+            runtime = int(row[0][:-4])
+
+            # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
+            year = int(row[0]) - (int(row[0]) % 10)
 
             runtime = int(row[1][:-4])
 
