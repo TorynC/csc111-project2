@@ -181,17 +181,7 @@ class Tree:
             3
               5
         """
-        if not items:
-            return
 
-        for subtree in self._subtrees:
-            if subtree.root() == items[0]:
-                subtree.insert_sequence(items[1:])
-                return
-
-        new_subtree = Tree(items[0], [])
-        self._subtrees.append(new_subtree)
-        new_subtree.insert_sequence(items[1:])
 
     def convert_to_subtree(self, item: Optional[Any]) -> None:
         """Change the tree into the subtree which has the matching root with given item
@@ -200,7 +190,7 @@ class Tree:
         for subtree in self._subtrees:
             if subtree.root() == item:
                 self._root = subtree.root()
-                self._subtrees = subtree.subtrees()
+                self._subtrees = subtree._subtrees
                 return
         self._root = None
         self._subtrees = []
@@ -236,10 +226,6 @@ def build_decision_tree(file: str) -> Tree:
             row.pop(3)
             row.pop(0)
             row.append(row.pop(0))
-
-            year = int(row[0]) - (int(row[0]) % 10)
-
-            runtime = int(row[0][:-4])
 
             # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
             year = int(row[0]) - (int(row[0]) % 10)
