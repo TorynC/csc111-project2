@@ -185,7 +185,7 @@ class Tree:
             return
 
         for subtree in self._subtrees:
-            if subtree.root() == items[0]:
+            if subtree._root == items[0]:
                 subtree.insert_sequence(items[1:])
                 return
 
@@ -199,8 +199,8 @@ class Tree:
         """
         for subtree in self._subtrees:
             if subtree.root() == item:
-                self._root = subtree.root()
-                self._subtrees = subtree.subtrees()
+                self._root = subtree._root
+                self._subtrees = subtree._subtrees
                 return
         self._root = None
         self._subtrees = []
