@@ -257,22 +257,27 @@ def build_decision_tree(file: str) -> Tree:
             actor = [row[4], row[5], row[6], row[7]]
 
             for g in genre:
+                tree.insert_sequence([year, runtime, g, "", "", row[8]])
+                tree.insert_sequence([year, runtime, g, director, "", row[8]])
                 for a in actor:
                     tree.insert_sequence([year, runtime, g, director, a, row[8]])
+                    tree.insert_sequence([year, runtime, g, "", a, row[8]])
     return tree
 
 
-def recommendation_system(movie_file: str, user_input: dict) -> None:    # Can be used for the test
-    """Run a movie recommendation system based on the given movie data file.
+def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
+    """Run a movie recommendation system based on the given movie data file and return the list of recommending movie's
+    title.
     """
     tree_so_far = build_decision_tree(movie_file)
-    user_input = get_user_input(MOVIE_QUESTIONS)
 
-    for user in user_input:
-        tree_so_far.convert_to_subtree(str(int(user)))
+    tree_so_far.convert_to_subtree(str(int(user_input["year"])))
+    tree_so_far.convert_to_subtree(str(int(user_input["runtime"])))
+    tree_so_far.convert_to_subtree(user_input["genre"])
+    tree_so_far.convert_to_subtree(user_input["director"])
 
     if not tree_so_far.subtrees:
-        print("no movies")
+        # Rating
     else:
         for movie in tree_so_far.subtrees:
             print(movie)
