@@ -30,7 +30,7 @@ def menu() -> pygame.Surface:
     background.blit(titlesurface, titlerect)
 
     description = ("Hello, welcome to the CSC111 IMDb Movie Recommendation System! \n"
-                   "You will answer a few questions from questionnaire \n"
+                   "You will answer a few questions from a questionnaire \n"
                    "and based on your chosen preferences, the program will recommend \n"
                    "the most suitable movies for you from a database of the top 1000 \n"
                    "highest rated movies on IMDb. No personal information will be required.")
