@@ -262,7 +262,7 @@ def build_decision_tree(file: str) -> Tree:
     return tree
 
 
-def recommendation_system(movie_file: str, dictionary: dict) -> None:    # Can be used for the test
+def recommendation_system(movie_file: str, user_input: dict) -> None:    # Can be used for the test
     """Run a movie recommendation system based on the given movie data file.
     """
     tree_so_far = build_decision_tree(movie_file)
