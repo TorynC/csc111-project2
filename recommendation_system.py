@@ -18,7 +18,7 @@ MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
 
 
 TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 170), (400, 50),
-                                                  manager=MANAGER, object_id="text1"))
+                                                                            manager=MANAGER, object_id="text1"))
 TEXT_INPUT2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 500), (400, 50),
                                                   manager=MANAGER, object_id="text2"))
 TEXT_INPUT3 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 570), (400, 50),

@@ -181,17 +181,7 @@ class Tree:
             3
               5
         """
-        if not items:
-            return
 
-        for subtree in self._subtrees:
-            if subtree._root == items[0]:
-                subtree.insert_sequence(items[1:])
-                return
-
-        new_subtree = Tree(items[0], [])
-        self._subtrees.append(new_subtree)
-        new_subtree.insert_sequence(items[1:])
 
     def convert_to_subtree(self, item: Optional[Any]) -> None:
         """Change the tree into the subtree which has the matching root with given item
@@ -199,7 +189,7 @@ class Tree:
         """
         for subtree in self._subtrees:
             if subtree.root() == item:
-                self._root = subtree._root
+                self._root = subtree.root()
                 self._subtrees = subtree._subtrees
                 return
         self._root = None
@@ -241,7 +231,6 @@ def build_decision_tree(file: str) -> Tree:
             # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
             year = int(row[0]) - (int(row[0]) % 10)
 
-            # same as runtime, if the runtime is 263 min, then saved runtime might be 240.
             runtime = int(row[1][:-4])
 
             i = 1
@@ -257,7 +246,6 @@ def build_decision_tree(file: str) -> Tree:
 
             actor = [row[4], row[5], row[6], row[7]]
 
-            for g in genre:     # year runtime, genre, director, actor
                 for a in actor:
                     tree.insert_sequence([year, runtime, g, director, a, row[8]])
 
