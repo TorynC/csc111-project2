@@ -80,8 +80,9 @@ class Main:
                             self.outputs["actor1"] = self.inputs[4]
                             self.outputs["actor2"] = self.inputs[5]
                             self.outputs["actor3"] = self.inputs[6]
-                            '''to_be_printed = recommendation_system("data/imdb_top_1000.csv", self.outputs)'''
-                            self.gameStateManager.set_state("results")
+                            to_be_printed = recommendation_system("data/imdb_top_1000.csv", self.outputs)
+
+                            print(to_be_printed)
                             '''pygame.quit()
                             sys.exit()'''
                     if self.gameStateManager.get_state() == "results":

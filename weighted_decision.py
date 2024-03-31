@@ -223,7 +223,7 @@ def build_decision_tree(file: str) -> Tree:
     """
     tree = Tree('', [])  # The start of a decision tree
 
-    with open(file) as csv_file:
+    with open(file, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
 
@@ -300,7 +300,7 @@ def get_top_5_movies(movie_file: str) -> list[str]:
     """Return top 5 movies with the highest ratings.
     """
     movies_so_far = []
-    with open(movie_file) as csv_file:
+    with open(movie_file, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         for row in reader:
