@@ -271,8 +271,15 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
     """
     tree_so_far = build_decision_tree(movie_file)
 
-    tree_so_far.convert_to_subtree(str(int(user_input["year"])))
-    tree_so_far.convert_to_subtree(str(int(user_input["runtime"])))
+    tree_so_far.convert_to_subtree(int(user_input["year"]) - (int(user_input["year"]) % 10))
+    runtime = int(user_input["runtime"])
+    i = 1
+    while True:  # 0 ~ 59, 60 ~ 119, 120 ~ 179, 180 ~ 239, 240 ~ 299, 300 ~ 359...
+        if runtime - (60 * i) < 0:
+            runtime = 60 * (i - 1)
+            break
+        i += 1
+    tree_so_far.convert_to_subtree(runtime)
     tree_so_far.convert_to_subtree(user_input["genre"])
     tree_so_far.convert_to_subtree(user_input["director"])
 
@@ -286,6 +293,8 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
                 if user_a == tree_so_far.subtrees[i].root:
                     for m in tree_so_far.subtrees[i].subtrees:
                         movies_so_far.append(m.root)
+        movies_so_far = set(movies_so_far)
+        movies_so_far = list(movies_so_far)
         if len(movies_so_far) > 5:
             for _ in range(len(movies_so_far) - 5):
                 movies_so_far.pop()
