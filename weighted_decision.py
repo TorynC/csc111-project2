@@ -198,7 +198,7 @@ class Tree:
         If there is not matching subtree in the tree, change tree into an empty tree
         """
         for subtree in self._subtrees:
-            if subtree.root() == item:
+            if subtree._root == item:
                 self._root = subtree._root
                 self._subtrees = subtree._subtrees
                 return
@@ -259,29 +259,7 @@ def build_decision_tree(file: str) -> Tree:
             for g in genre:
                 for a in actor:
                     tree.insert_sequence([year, runtime, g, director, a, row[8]])
-
     return tree
-
-
-MOVIE_QUESTIONS = [
-    'What year do you prefer movies from?',
-    'What is your preferred running time for movies?',
-    'Any preferred genre from the list?',
-    'Any preferred directors?',
-    'Any preferred actors?'
-]
-
-
-def get_user_input(questions: list[str]) -> list[Any]:
-    """Return the user's answers to preference questions."""
-    answers_so_far = []
-
-    for i in range(len(questions)):
-        print(questions[i])
-        s = input(': ')
-        answers_so_far.append(s)
-
-    return answers_so_far
 
 
 def recommendation_system(movie_file: str, dictionary: dict) -> None:    # Can be used for the test
