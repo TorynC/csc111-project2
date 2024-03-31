@@ -6,7 +6,7 @@ import pygame_gui
 from weighted_decision import recommendation_system
 
 pygame.init()
-SCREEN_SIZE = (1000, 1000)
+SCREEN_SIZE = (1000, 800)
 BLACK = (12, 11, 0)
 YELLOW = (222, 181, 34)
 
@@ -18,7 +18,7 @@ CLOCK = pygame.time.Clock()
 MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
 
 
-TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 170), (400, 50),
+TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 340), (400, 50),
                                                                             manager=MANAGER, object_id="text1"))
 TEXT_INPUT2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 500), (400, 50),
                                                   manager=MANAGER, object_id="text2"))
@@ -30,7 +30,7 @@ TEXT_INPUT5 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((350
                                                   manager=MANAGER, object_id="text5"))
 TEXT_INPUT6 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((650, 650), (300, 50),
                                                   manager=MANAGER, object_id="text6"))
-TEXT_INPUT7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 250), (400, 50),
+TEXT_INPUT7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 420), (400, 50),
                                                   manager=MANAGER, object_id="text7"))
 def draw_text(text, font, color):
     """Draws the text"""
@@ -80,7 +80,7 @@ class Main:
                             self.outputs["actor1"] = self.inputs[4]
                             self.outputs["actor2"] = self.inputs[5]
                             self.outputs["actor3"] = self.inputs[6]
-                            to_be_printed = recommendation_system("data/imdb_top_1000.csv", self.outputs)
+                            '''to_be_printed = recommendation_system("data/imdb_top_1000.csv", self.outputs)'''
                             self.gameStateManager.set_state("results")
                             '''pygame.quit()
                             sys.exit()'''
@@ -122,16 +122,16 @@ class questionnaire:
         self.display.fill(BLACK)
         text1surface = draw_text("Please answer the following questions (press enter for each text box entry)", descriptionfont,
                                 YELLOW)
-        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 10))
+        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
         self.display.blit(text1surface, text1rect)
 
         question1surf = draw_text("Enter your preferred release year of movies", descriptionfont,
                                   YELLOW)
-        question1rect = question1surf.get_rect(center=(SCREEN_SIZE[0] // 2, 150))
+        question1rect = question1surf.get_rect(center=(SCREEN_SIZE[0] // 2, 320))
         self.display.blit(question1surf, question1rect)
 
         question2surf = draw_text("Enter your preferred runtime (minutes)", descriptionfont, YELLOW)
-        question2rect = question2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 230))
+        question2rect = question2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 400))
         self.display.blit(question2surf, question2rect)
 
         question3surf = draw_text("Enter your preferred genre", descriptionfont, YELLOW)
@@ -147,7 +147,7 @@ class questionnaire:
         self.display.blit(question5surf, question5rect)
 
         text2surf = draw_text("Press ESC to restart/Press TAB to continue", descriptionfont, YELLOW)
-        text2rect = text2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 800))
+        text2rect = text2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 750))
         self.display.blit(text2surf, text2rect)
 
         MANAGER.draw_ui(self.display)
@@ -161,7 +161,7 @@ class questionnaire:
         elif signal == 2:
             error = draw_text("ERROR: too many inputs, please restart, clear all entries and try again",
                               descriptionfont, YELLOW)
-        errorrect = error.get_rect(center=(SCREEN_SIZE[0] // 2, 400))
+        errorrect = error.get_rect(center=(SCREEN_SIZE[0] // 2, 250))
         self.display.fill(BLACK, errorrect)
         self.display.blit(error, errorrect)
         pygame.display.update(errorrect)
