@@ -277,19 +277,38 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
     tree_so_far.convert_to_subtree(user_input["director"])
 
     if not tree_so_far.subtrees:
-        movies_so_far = []
-        with open(movie_file) as csv_file:
-            reader = csv.reader(csv_file)
-            next(reader)
-            for row in reader:
-                rating = float(row[6])
-                movies_so_far.append((row[1], rating))
-
-        movies_so_far.sort(key=lambda x: x[1], reverse=True)
-        top_5 = movies_so_far[:5]
-
-        top_5_titles = [movie[0] for movie in top_5]
-        return top_5_titles
+        return get_top_5_movies(movie_file)
     else:
-        for movie in tree_so_far.subtrees:
-            print(movie)
+        movies_so_far = []
+        user_pref_actors = [user_input["actor1"], user_input["actor2"], user_input["actor3"]]
+        for i in range(len(tree_so_far.subtrees)):
+            for user_a in user_pref_actors:
+                if user_a == tree_so_far.subtrees[i].root:
+                    for m in tree_so_far.subtrees[i].subtrees:
+                        movies_so_far.append(m.root)
+        if len(movies_so_far) > 5:
+            for _ in range(len(movies_so_far) - 5):
+                movies_so_far.pop()
+        elif len(movies_so_far) < 5
+            m = get_top_5_movies(movie_file)
+            for _ in range(5 - len(movies_so_far)):
+                movies_so_far.append(m.pop())
+        return movies_so_far
+
+
+def get_top_5_movies(movie_file: str) -> list[str]:
+    """Return top 5 movies with the highest ratings.
+    """
+    movies_so_far = []
+    with open(movie_file) as csv_file:
+        reader = csv.reader(csv_file)
+        next(reader)
+        for row in reader:
+            rating = float(row[6])
+            movies_so_far.append((row[1], rating))
+
+    movies_so_far.sort(key=lambda x: x[1], reverse=True)
+    top_5 = movies_so_far[:5]
+
+    top_5_titles = [movie[0] for movie in top_5]
+    return top_5_titles
