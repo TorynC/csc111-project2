@@ -237,13 +237,10 @@ def build_decision_tree(file: str) -> Tree:
             row.pop(0)
             row.append(row.pop(0))
 
-            year = int(row[0]) - (int(row[0]) % 10)
-
-            runtime = int(row[0][:-4])
-
             # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
             year = int(row[0]) - (int(row[0]) % 10)
 
+            # same as runtime, if the runtime is 263 min, then saved runtime might be 240.
             runtime = int(row[1][:-4])
 
             i = 1
@@ -259,7 +256,7 @@ def build_decision_tree(file: str) -> Tree:
 
             actor = [row[4], row[5], row[6], row[7]]
 
-            for g in genre:
+            for g in genre:     # year runtime, genre, director, actor
                 for a in actor:
                     tree.insert_sequence([year, runtime, g, director, a])
 
