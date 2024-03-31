@@ -15,7 +15,6 @@ titlefont = pygame.font.SysFont("arialblack", 37)
 descriptionfont = pygame.font.SysFont("arialblack", 20)
 CLOCK = pygame.time.Clock()
 MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
-finalresult = []
 
 
 TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 170), (400, 50),
@@ -30,11 +29,13 @@ TEXT_INPUT5 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((350
                                                   manager=MANAGER, object_id="text5"))
 TEXT_INPUT6 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((650, 650), (300, 50),
                                                   manager=MANAGER, object_id="text6"))
-
+TEXT_INPUT7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 250), (400, 50),
+                                                  manager=MANAGER, object_id="text7"))
 def draw_text(text, font, color):
     """Draws the text"""
     txt = font.render(text, True, color)
     return txt
+
 
 class Main:
     def __init__(self):
@@ -42,13 +43,17 @@ class Main:
         self.gameStateManager = GameStateManager("start")
         self.start = start(self.screen, self.gameStateManager)
         self.questionnaire = questionnaire(self.screen, self.gameStateManager)
+        self.outputs = {"year": "", "runtime": "", "genre": "", "director": "",
+                        "actor1": "", "actor2": "", "actor3": ""}
+        self.results = results(self.screen, self.gameStateManager, self.outputs)
         self.inputs = []
-        self.states = {'start': self.start, "questionnaire": self.questionnaire}
+
+        self.states = {'start': self.start, "questionnaire": self.questionnaire, "results": self.results}
 
     def run(self):
         while True:
+            UI_REFERSH_RATE = CLOCK.tick(60) / 1000
 
-            UI_REFERSH_RATE = CLOCK.tick(60)/1000
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -61,18 +66,55 @@ class Main:
                         self.gameStateManager.set_state("start")
                         self.inputs.clear()
                     if event.key == pygame.K_TAB:
-                        pygame.quit()
-                        sys.exit()
+                        if len(self.inputs) < 7:
+                            self.questionnaire.errormessage(0)
+                        elif len(self.inputs) > 7:
+                            self.questionnaire.errormessage(2)
+                        else:
+                            self.questionnaire.errormessage(1)
+                            self.outputs["year"] = self.inputs[0]
+                            self.outputs["runtime"] = self.inputs[1]
+                            self.outputs["genre"] = self.inputs[2]
+                            self.outputs["director"] = self.inputs[3]
+                            self.outputs["actor1"] = self.inputs[4]
+                            self.outputs["actor2"] = self.inputs[5]
+                            self.outputs["actor3"] = self.inputs[6]
+                            print(self.outputs)
+                            self.gameStateManager.set_state("results")
+                            '''pygame.quit()
+                            sys.exit()'''
+                    if self.gameStateManager.get_state() == "results":
+                        if event.key == pygame.K_BACKSPACE:
+                            pygame.quit()
+                            sys.exit()
                 MANAGER.process_events(event)
             MANAGER.update(UI_REFERSH_RATE)
             self.states[self.gameStateManager.get_state()].run()
 
             pygame.display.update()
 
+class results:
+    def __init__(self, display, gameStateManager, outputs):
+        self.display = display
+        self.gameStateManager = gameStateManager
+        self.outputs = outputs
+
+    def run(self):
+        self.display.fill(BLACK)
+        text1surface = draw_text("Results", titlefont, YELLOW)
+        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 10))
+        self.display.blit(text1surface, text1rect)
+
+        exitmessage = draw_text("Press BACKSPACE to exit", descriptionfont, YELLOW)
+        exitrect = exitmessage.get_rect(center=(SCREEN_SIZE[0] // 2, 800))
+        self.display.blit(exitmessage, exitrect)
+
+
 class questionnaire:
     def __init__(self, display, gameStateManager):
         self.display = display
         self.gameStateManager = gameStateManager
+
 
     # order of questions =year, runtime, genre, director, actor
     def run(self):
@@ -87,7 +129,7 @@ class questionnaire:
         question1rect = question1surf.get_rect(center=(SCREEN_SIZE[0] // 2, 150))
         self.display.blit(question1surf, question1rect)
 
-        question2surf = draw_text("Select your preferred runtime", descriptionfont, YELLOW)
+        question2surf = draw_text("Enter your preferred runtime (minutes)", descriptionfont, YELLOW)
         question2rect = question2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 230))
         self.display.blit(question2surf, question2rect)
 
@@ -108,6 +150,20 @@ class questionnaire:
         self.display.blit(text2surf, text2rect)
 
         MANAGER.draw_ui(self.display)
+
+    def errormessage(self, signal: int):
+        error = draw_text("ERROR: Please answer all questions ", descriptionfont,
+                              BLACK)
+        if signal == 0:
+            error = draw_text("ERROR: Please answer all questions ", descriptionfont,
+                              YELLOW)
+        elif signal == 2:
+            error = draw_text("ERROR: too many inputs, please restart, clear all entries and try again",
+                              descriptionfont, YELLOW)
+        errorrect = error.get_rect(center=(SCREEN_SIZE[0] // 2, 400))
+        self.display.fill(BLACK, errorrect)
+        self.display.blit(error, errorrect)
+        pygame.display.update(errorrect)
 
 
 
