@@ -18,19 +18,19 @@ CLOCK = pygame.time.Clock()
 MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
 
 
-TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 340), (400, 50),
+TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 140), (400, 50),
                                                                             manager=MANAGER, object_id="text1"))
-TEXT_INPUT2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 500), (400, 50),
+TEXT_INPUT2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 300), (400, 50),
                                                   manager=MANAGER, object_id="text2"))
-TEXT_INPUT3 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 570), (400, 50),
+TEXT_INPUT3 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 370), (400, 50),
                                                   manager=MANAGER, object_id="text3"))
-TEXT_INPUT4 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((50, 650), (300, 50),
+TEXT_INPUT4 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((50, 450), (300, 50),
                                                   manager=MANAGER, object_id="text4"))
-TEXT_INPUT5 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((350, 650), (300, 50),
+TEXT_INPUT5 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((350, 450), (300, 50),
                                                   manager=MANAGER, object_id="text5"))
-TEXT_INPUT6 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((650, 650), (300, 50),
+TEXT_INPUT6 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((650, 450), (300, 50),
                                                   manager=MANAGER, object_id="text6"))
-TEXT_INPUT7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 420), (400, 50),
+TEXT_INPUT7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 220), (400, 50),
                                                   manager=MANAGER, object_id="text7"))
 def draw_text(text, font, color):
     """Draws the text"""
@@ -122,32 +122,32 @@ class questionnaire:
         self.display.fill(BLACK)
         text1surface = draw_text("Please answer the following questions (press enter for each text box entry)", descriptionfont,
                                 YELLOW)
-        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
+        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, 10))
         self.display.blit(text1surface, text1rect)
 
         question1surf = draw_text("Enter your preferred release year of movies", descriptionfont,
                                   YELLOW)
-        question1rect = question1surf.get_rect(center=(SCREEN_SIZE[0] // 2, 320))
+        question1rect = question1surf.get_rect(center=(SCREEN_SIZE[0] // 2, 120))
         self.display.blit(question1surf, question1rect)
 
         question2surf = draw_text("Enter your preferred runtime (minutes)", descriptionfont, YELLOW)
-        question2rect = question2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 400))
+        question2rect = question2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
         self.display.blit(question2surf, question2rect)
 
         question3surf = draw_text("Enter your preferred genre", descriptionfont, YELLOW)
-        question3rect = question3surf.get_rect(center=(SCREEN_SIZE[0] // 2, 480))
+        question3rect = question3surf.get_rect(center=(SCREEN_SIZE[0] // 2, 280))
         self.display.blit(question3surf, question3rect)
 
         question4surf = draw_text("Enter your preferred director", descriptionfont, YELLOW)
-        question4rect = question4surf.get_rect(center=(SCREEN_SIZE[0] // 2, 560))
+        question4rect = question4surf.get_rect(center=(SCREEN_SIZE[0] // 2, 360))
         self.display.blit(question4surf, question4rect)
 
         question5surf = draw_text("Enter your 3 preferred actors", descriptionfont, YELLOW)
-        question5rect = question5surf.get_rect(center=(SCREEN_SIZE[0] // 2, 640))
+        question5rect = question5surf.get_rect(center=(SCREEN_SIZE[0] // 2, 440))
         self.display.blit(question5surf, question5rect)
 
         text2surf = draw_text("Press ESC to restart/Press TAB to continue", descriptionfont, YELLOW)
-        text2rect = text2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 750))
+        text2rect = text2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 550))
         self.display.blit(text2surf, text2rect)
 
         MANAGER.draw_ui(self.display)
@@ -161,7 +161,7 @@ class questionnaire:
         elif signal == 2:
             error = draw_text("ERROR: too many inputs, please restart, clear all entries and try again",
                               descriptionfont, YELLOW)
-        errorrect = error.get_rect(center=(SCREEN_SIZE[0] // 2, 250))
+        errorrect = error.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
         self.display.fill(BLACK, errorrect)
         self.display.blit(error, errorrect)
         pygame.display.update(errorrect)
