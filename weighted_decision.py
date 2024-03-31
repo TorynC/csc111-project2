@@ -277,7 +277,19 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
     tree_so_far.convert_to_subtree(user_input["director"])
 
     if not tree_so_far.subtrees:
-        # Rating
+        movies_so_far = []
+        with open(movie_file) as csv_file:
+            reader = csv.reader(csv_file)
+            next(reader)
+            for row in reader:
+                rating = float(row[6])
+                movies_so_far.append((row[1], rating))
+
+        movies_so_far.sort(key=lambda x: x[1], reverse=True)
+        top_5 = movies_so_far[:5]
+
+        top_5_titles = [movie[0] for movie in top_5]
+        return top_5_titles
     else:
         for movie in tree_so_far.subtrees:
             print(movie)
