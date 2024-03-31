@@ -289,7 +289,7 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
         if len(movies_so_far) > 5:
             for _ in range(len(movies_so_far) - 5):
                 movies_so_far.pop()
-        elif len(movies_so_far) < 5
+        elif len(movies_so_far) < 5:
             m = get_top_5_movies(movie_file)
             for _ in range(5 - len(movies_so_far)):
                 movies_so_far.append(m.pop())
