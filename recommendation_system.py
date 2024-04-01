@@ -4,6 +4,7 @@ import pygame
 import sys
 import pygame_gui
 from weighted_decision import recommendation_system
+#try to fix the error message add docstrings and datatypes
 
 pygame.init()
 SCREEN_SIZE = (1000, 800)
@@ -17,7 +18,6 @@ descriptionfont = pygame.font.SysFont("arialblack", 20)
 CLOCK = pygame.time.Clock()
 MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
 to_be_printed = []
-
 TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 140), (400, 50),
                                                                             manager=MANAGER, object_id="text1"))
 TEXT_INPUT2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 300), (400, 50),
