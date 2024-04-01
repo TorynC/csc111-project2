@@ -70,6 +70,9 @@ def is_integer(userinput: int | str) -> bool:
 class StateManager:
     """Class that will create the object to allow transition between different pages of the
     program"""
+
+    currentstate: Any
+
     def __init__(self, currentstate: Any) -> None:
         self.currentstate = currentstate
 
