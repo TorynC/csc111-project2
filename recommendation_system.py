@@ -271,7 +271,3 @@ class StateManager:
         """changes the current page"""
         self.currentstate = state
 
-
-if __name__ == "__main__":
-    main = Main()
-    main.run()
