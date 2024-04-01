@@ -31,7 +31,6 @@ class Movie:
         - director: director of the movie
         - stars: stars acted on the movie
     """
-
     title: str
     release_year: int
     imdb_rating: float
