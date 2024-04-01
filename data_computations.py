@@ -18,8 +18,8 @@ class Movie:
     stars: set[str]
     gross: int
 
-    def __init__(self, title, release_year, age_rate, imdb_rating, meta_score, runtime, genre, description, director,
-                 stars, gross):
+    def __init__(self, title, release_year, age_rate, imdb_rating, meta_score, runtime, genre,
+                 description, director, stars, gross):
         self.title = title
         self.release_year = release_year
         self.age_rate = age_rate
@@ -53,7 +53,7 @@ def csv_to_object(file_name: str) -> list[Movie]:
             genre = set(row[5].split())
             gross = int(row[15])
             output_lst.append(
-                Movie(title, release_year, age_rate, imdb_rating, metascore, runtime, genre, description, director,
-                      stars, gross))
+                Movie(title, release_year, age_rate, imdb_rating, metascore, runtime, genre,
+                      description, director, stars, gross))
 
     return output_lst
