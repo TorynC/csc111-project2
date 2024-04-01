@@ -16,7 +16,7 @@ titlefont = pygame.font.SysFont("arialblack", 37)
 descriptionfont = pygame.font.SysFont("arialblack", 20)
 CLOCK = pygame.time.Clock()
 MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
-
+to_be_printed = []
 
 TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 140), (400, 50),
                                                                             manager=MANAGER, object_id="text1"))
@@ -37,6 +37,12 @@ def draw_text(text, font, color):
     txt = font.render(text, True, color)
     return txt
 
+def is_integer(input) -> bool:
+    try:
+        int(input)
+        return True
+    except ValueError:
+        return False
 
 class Main:
     def __init__(self):
@@ -46,7 +52,7 @@ class Main:
         self.questionnaire = questionnaire(self.screen, self.gameStateManager)
         self.outputs = {"year": "", "runtime": "", "genre": "", "director": "",
                         "actor1": "", "actor2": "", "actor3": ""}
-        self.results = results(self.screen, self.gameStateManager, self.outputs)
+        self.results = results(self.screen, self.gameStateManager)
         self.inputs = []
 
         self.states = {'start': self.start, "questionnaire": self.questionnaire, "results": self.results}
@@ -72,19 +78,20 @@ class Main:
                         elif len(self.inputs) > 7:
                             self.questionnaire.errormessage(2)
                         else:
-                            self.questionnaire.errormessage(1)
-                            self.outputs["year"] = self.inputs[0]
-                            self.outputs["runtime"] = self.inputs[1]
-                            self.outputs["genre"] = self.inputs[2]
-                            self.outputs["director"] = self.inputs[3]
-                            self.outputs["actor1"] = self.inputs[4]
-                            self.outputs["actor2"] = self.inputs[5]
-                            self.outputs["actor3"] = self.inputs[6]
-                            to_be_printed = recommendation_system("data/imdb_top_1000.csv", self.outputs)
+                            if is_integer(self.inputs[0]) and is_integer(self.inputs[1]):
+                                self.outputs["year"] = self.inputs[0]
+                                self.outputs["runtime"] = self.inputs[1]
+                                self.outputs["genre"] = self.inputs[2]
+                                self.outputs["director"] = self.inputs[3]
+                                self.outputs["actor1"] = self.inputs[4]
+                                self.outputs["actor2"] = self.inputs[5]
+                                self.outputs["actor3"] = self.inputs[6]
 
-                            print(to_be_printed)
-                            '''pygame.quit()
-                            sys.exit()'''
+                                to_be_printed.extend(recommendation_system("data/imdb_top_1000.csv", self.outputs))
+                                self.gameStateManager.set_state("results")
+                                print(to_be_printed)
+                            else:
+                                self.questionnaire.errormessage(1)
                     if self.gameStateManager.get_state() == "results":
                         if event.key == pygame.K_BACKSPACE:
                             pygame.quit()
@@ -96,10 +103,9 @@ class Main:
             pygame.display.update()
 
 class results:
-    def __init__(self, display, gameStateManager, outputs):
+    def __init__(self, display, gameStateManager):
         self.display = display
         self.gameStateManager = gameStateManager
-        self.outputs = outputs
 
     def run(self):
         self.display.fill(BLACK)
@@ -108,7 +114,7 @@ class results:
         self.display.blit(text1surface, text1rect)
 
         exitmessage = draw_text("Press BACKSPACE to exit", descriptionfont, YELLOW)
-        exitrect = exitmessage.get_rect(center=(SCREEN_SIZE[0] // 2, 800))
+        exitrect = exitmessage.get_rect(center=(SCREEN_SIZE[0] // 2, 700))
         self.display.blit(exitmessage, exitrect)
 
 
@@ -159,6 +165,9 @@ class questionnaire:
         if signal == 0:
             error = draw_text("ERROR: Please answer all questions ", descriptionfont,
                               YELLOW)
+        elif signal == 1:
+            error = draw_text("Please enter an integer for entries 1 and 2", descriptionfont,
+                             YELLOW)
         elif signal == 2:
             error = draw_text("ERROR: too many inputs, please restart, clear all entries and try again",
                               descriptionfont, YELLOW)
@@ -184,7 +193,7 @@ class start:
         description = ("Hello, welcome to the CSC111 IMDb Movie Recommendation System! \n"
                        "You will answer a few questions from a questionnaire \n"
                        "and based on your chosen preferences, the program will recommend \n"
-                       "the most suitable movies for you from a database of the top 1000 \n"
+                       "the 5 most suitable movies for you from a database of the top 1000 \n"
                        "highest rated movies on IMDb. No personal information will be required.")
         collection = description.splitlines()
         curr_pos = 300
