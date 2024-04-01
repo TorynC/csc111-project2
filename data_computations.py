@@ -2,8 +2,8 @@
 
 Module Description
 ==================
-This Python module is weighted decision module where read the file of
-the movie lists and return recommendation of the movies.
+This Python module is data computing module where use data class to save
+movies' data and return the list of all the movies' data in list.
 
 Copyright and Usage Information
 ===============================
@@ -30,7 +30,8 @@ class Movie:
     director: str
     stars: set[str]
 
-    def __init__(self, title, release_year, imdb_rating, runtime, genre, director, stars):
+    def __init__(self, title: str, release_year: int, imdb_rating: float, runtime: int,
+                 genre: set[str], director: str, stars: set[str]) -> None:
         self.title = title
         self.release_year = release_year
         self.imdb_rating = imdb_rating
@@ -59,3 +60,12 @@ def csv_to_object(file_name: str) -> list[Movie]:
                 Movie(title, release_year, imdb_rating, runtime, genre, director, stars))
 
     return output_lst
+
+
+if __name__ == '__main__':
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['csv'],
+        'allowed-io': ['csv_to_object'],
+        'max-line-length': 120
+    })

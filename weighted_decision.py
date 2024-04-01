@@ -2,8 +2,9 @@
 
 Module Description
 ==================
-This Python module is weighted decision module where read the file of
-the movie lists and return recommendation of the movies.
+This Python module is weighted decision module where get the data for the
+movies and user input and then create movie recommendation based on the given
+data.
 
 Copyright and Usage Information
 ===============================
@@ -171,7 +172,7 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
     tree_so_far.convert_to_subtree(user_input["genre"].lower())
     tree_so_far.convert_to_subtree(user_input["director"].lower())
 
-    if not tree_so_far.subtrees: # The case when there is no matching movies.
+    if not tree_so_far.subtrees:  # The case when there is no matching movies.
         return get_top_5_movies(movie_file)
     else:
         movies_so_far = {}
@@ -200,10 +201,10 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
                 if not added:
                     movie_titles.append(key)
 
-        if len(movie_titles) > 5:   # Since there is more than 5 movies, leave only top 5 movies.
+        if len(movie_titles) > 5:  # Since there is more than 5 movies, leave only top 5 movies.
             for _ in range(len(movie_titles) - 5):
                 movie_titles.pop()
-        elif len(movie_titles) < 5: # Since there is less then 5 movies, add top rating movies.
+        elif len(movie_titles) < 5:  # Since there is less then 5 movies, add top rating movies.
             m = get_top_5_movies(movie_file)
             for _ in range(5 - len(movie_titles)):
                 movie_titles.append(m.pop())
@@ -221,14 +222,14 @@ def get_top_5_movies(movie_file: str) -> list[str]:
     movies_so_far.sort(key=lambda x: x[1], reverse=True)
     top_5 = movies_so_far[:5]
 
-    top_5_titles = [movie[0] for movie in top_5]
+    top_5_titles = [m[0] for m in top_5]
     return top_5_titles
 
 
 if __name__ == '__main__':
     import python_ta
     python_ta.check_all(config={
-        'extra-imports': [],
+        'extra-imports': ['data_computations'],
         'allowed-io': [],
         'max-line-length': 120
     })
