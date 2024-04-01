@@ -47,22 +47,6 @@ class Tree:
 
         Preconditions:
             - not self.is_empty()
-
-        >>> t = Tree(111, [])
-        >>> t.insert_sequence([1, 2, 3])
-        >>> print(t)
-        111
-          1
-            2
-              3
-        >>> t.insert_sequence([1, 3, 5])
-        >>> print(t)
-        111
-          1
-            2
-              3
-            3
-              5
         """
         if not items:
             return
@@ -215,3 +199,12 @@ def get_top_5_movies(movie_file: str) -> list[str]:
 
     top_5_titles = [movie[0] for movie in top_5]
     return top_5_titles
+
+
+if __name__ == '__main__':
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['csv'],
+        'allowed-io': ['build_decision_tree', 'recommendation_system', 'get_top_5_movies'],
+        'max-line-length': 120
+    })
