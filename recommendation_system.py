@@ -1,4 +1,21 @@
-""""CSC111 Project 2: Movie Recommendation System Code
+""""CSC111 Winter 2024 Project 2: Movie Recommendation System
+
+Module Description
+==================
+This module contains the GUI classes and pygame libraries used to display the GUI of the program
+to the user. All interactions between the user and the program will be handled here and the results
+of the program will also be displayed here.
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of students
+taking CSC111 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC111 materials,
+please consult our Course Syllabus.
+
+This file is Copyright (c) 2024 Toryn Chua, Jacob Keluthara, Yeonjun Kim, Dan Kim.
 """
 import pygame
 import sys
