@@ -1,0 +1,8 @@
+pygame
+pygame-gui
+sys
+doctest
+python_ta	
+__future__
+typing
+csv
