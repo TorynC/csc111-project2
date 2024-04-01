@@ -87,17 +87,21 @@ class Main:
                             self.questionnaire.errormessage(2)
                         else:
                             if is_integer(self.inputs[0]) and is_integer(self.inputs[1]):
-                                self.outputs["year"] = self.inputs[0]
-                                self.outputs["runtime"] = self.inputs[1]
-                                self.outputs["genre"] = self.inputs[2]
-                                self.outputs["director"] = self.inputs[3]
-                                self.outputs["actor1"] = self.inputs[4]
-                                self.outputs["actor2"] = self.inputs[5]
-                                self.outputs["actor3"] = self.inputs[6]
+                                if (self.inputs[0] == '' or self.inputs[1] == '' or
+                                        self.inputs[2] == ''):
+                                    self.questionnaire.errormessage(3)
+                                else:
+                                    self.outputs["year"] = self.inputs[0]
+                                    self.outputs["runtime"] = self.inputs[1]
+                                    self.outputs["genre"] = self.inputs[2]
+                                    self.outputs["director"] = self.inputs[3]
+                                    self.outputs["actor1"] = self.inputs[4]
+                                    self.outputs["actor2"] = self.inputs[5]
+                                    self.outputs["actor3"] = self.inputs[6]
 
-                                to_be_printed.extend(recommendation_system("data/imdb_top_1000.csv",
-                                                                           self.outputs))
-                                self.state_manager.set_state("results")
+                                    to_be_printed.extend(recommendation_system("data/imdb_top_1000.csv",
+                                                                               self.outputs))
+                                    self.state_manager.set_state("results")
                             else:
                                 self.questionnaire.errormessage(1)
                     if self.state_manager.get_state() == "results":
@@ -202,11 +206,13 @@ class Questionnaire:
     def errormessage(self, signal: int) -> None:
         """Will update the error message that will be displayed on the questionnaire page"""
         if signal == 0:
-            self.current_error_message = "error: answer all questions"
+            self.current_error_message = "Error: answer all questions"
         elif signal == 1:
-            self.current_error_message = "please enter an integer for entries 1 and 2"
+            self.current_error_message = "Error: please enter an integer for entries 1 and 2"
         elif signal == 2:
-            self.current_error_message = "too many inputs, restart and clear all entries"
+            self.current_error_message = "Error: too many inputs, restart and clear all entries"
+        elif signal == 3:
+            self.current_error_message = "Error: entries 1, 2 and 3 must not be empty"
         else:
             self.current_error_message = None
 
