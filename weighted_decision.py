@@ -257,11 +257,11 @@ def build_decision_tree(file: str) -> Tree:
             actor = [row[4], row[5], row[6], row[7]]
 
             for g in genre:
-                tree.insert_sequence([year, runtime, g, "", "", row[8]])
-                tree.insert_sequence([year, runtime, g, director, "", row[8]])
+                tree.insert_sequence([year, runtime, g.lower(), "", "", row[8]])
+                tree.insert_sequence([year, runtime, g.lower(), director.lower(), "", row[8]])
                 for a in actor:
-                    tree.insert_sequence([year, runtime, g, director, a, row[8]])
-                    tree.insert_sequence([year, runtime, g, "", a, row[8]])
+                    tree.insert_sequence([year, runtime, g.lower(), director.lower(), a.lower(), row[8]])
+                    tree.insert_sequence([year, runtime, g.lower(), "", a.lower(), row[8]])
     return tree
 
 
@@ -280,14 +280,14 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
             break
         i += 1
     tree_so_far.convert_to_subtree(runtime)
-    tree_so_far.convert_to_subtree(user_input["genre"])
-    tree_so_far.convert_to_subtree(user_input["director"])
+    tree_so_far.convert_to_subtree(user_input["genre"].lower())
+    tree_so_far.convert_to_subtree(user_input["director"].lower())
 
     if not tree_so_far.subtrees:
         return get_top_5_movies(movie_file)
     else:
         movies_so_far = []
-        user_pref_actors = [user_input["actor1"], user_input["actor2"], user_input["actor3"]]
+        user_pref_actors = [user_input["actor1"].lower(), user_input["actor2"].lower(), user_input["actor3"].lower()]
         for i in range(len(tree_so_far.subtrees)):
             for user_a in user_pref_actors:
                 if user_a == tree_so_far.subtrees[i].root:
