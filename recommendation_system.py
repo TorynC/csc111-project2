@@ -4,7 +4,6 @@ import pygame
 import sys
 import pygame_gui
 from weighted_decision import recommendation_system
-#try to fix the error message add docstrings and datatypes
 
 pygame.init()
 SCREEN_SIZE = (1000, 800)
@@ -19,7 +18,7 @@ CLOCK = pygame.time.Clock()
 MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
 to_be_printed = []
 TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 140), (400, 50),
-                                                                            manager=MANAGER, object_id="text1"))
+                                                  manager=MANAGER, object_id="text1"))
 TEXT_INPUT2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 300), (400, 50),
                                                   manager=MANAGER, object_id="text2"))
 TEXT_INPUT3 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 370), (400, 50),
@@ -32,34 +31,42 @@ TEXT_INPUT6 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((650
                                                   manager=MANAGER, object_id="text6"))
 TEXT_INPUT7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((300, 220), (400, 50),
                                                   manager=MANAGER, object_id="text7"))
-def draw_text(text, font, color):
+
+
+def draw_text(text: str, font: pygame.Font, color: tuple[int, int, int]) -> pygame.Surface:
     """Draws the text"""
     txt = font.render(text, True, color)
     return txt
 
-def is_integer(input) -> bool:
+
+def is_integer(userinput: int | str) -> bool:
+    """tests input value to see if it is an integer or string"""
     try:
-        int(input)
+        int(userinput)
         return True
     except ValueError:
         return False
 
+
 class Main:
+    """Class that creates an object of the main program"""
     def __init__(self):
         self.screen = SCREEN
-        self.gameStateManager = GameStateManager("start")
-        self.start = start(self.screen, self.gameStateManager)
-        self.questionnaire = questionnaire(self.screen, self.gameStateManager)
+        self.state_manager = StateManager("start")
+        self.start = Start(self.screen, self.state_manager)
+        self.questionnaire = Questionnaire(self.screen, self.state_manager)
         self.outputs = {"year": "", "runtime": "", "genre": "", "director": "",
                         "actor1": "", "actor2": "", "actor3": ""}
-        self.results = results(self.screen, self.gameStateManager)
+        self.results = Results(self.screen, self.state_manager)
         self.inputs = []
 
-        self.states = {'start': self.start, "questionnaire": self.questionnaire, "results": self.results}
+        self.states = {'start': self.start, "questionnaire": self.questionnaire,
+                       "results": self.results}
 
-    def run(self):
+    def run(self) -> None:
+        """Method that will run the main loop of the program"""
         while True:
-            UI_REFERSH_RATE = CLOCK.tick(60) / 1000
+            ui_refresh_rate = CLOCK.tick(60) / 1000
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -67,10 +74,11 @@ class Main:
                     sys.exit()
                 if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
                     self.inputs.append(event.text)
-                    print(self.inputs)
+                    self.states['questionnaire'].clear_error_message()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE and self.gameStateManager.get_state() == "questionnaire":
-                        self.gameStateManager.set_state("start")
+                    if (event.key == pygame.K_ESCAPE and
+                            self.state_manager.get_state() == "questionnaire"):
+                        self.state_manager.set_state("start")
                         self.inputs.clear()
                     if event.key == pygame.K_TAB:
                         if len(self.inputs) < 7:
@@ -87,27 +95,30 @@ class Main:
                                 self.outputs["actor2"] = self.inputs[5]
                                 self.outputs["actor3"] = self.inputs[6]
 
-                                to_be_printed.extend(recommendation_system("data/imdb_top_1000.csv", self.outputs))
-                                self.gameStateManager.set_state("results")
-                                print(to_be_printed)
+                                to_be_printed.extend(recommendation_system("data/imdb_top_1000.csv",
+                                                                           self.outputs))
+                                self.state_manager.set_state("results")
                             else:
                                 self.questionnaire.errormessage(1)
-                    if self.gameStateManager.get_state() == "results":
+                    if self.state_manager.get_state() == "results":
                         if event.key == pygame.K_BACKSPACE:
                             pygame.quit()
                             sys.exit()
                 MANAGER.process_events(event)
-            MANAGER.update(UI_REFERSH_RATE)
-            self.states[self.gameStateManager.get_state()].run()
+            MANAGER.update(ui_refresh_rate)
+            self.states[self.state_manager.get_state()].run()
 
             pygame.display.update()
 
-class results:
-    def __init__(self, display, gameStateManager):
-        self.display = display
-        self.gameStateManager = gameStateManager
 
-    def run(self):
+class Results:
+    """Class that will create the results page of the GUI"""
+    def __init__(self, display, state_manager):
+        self.display = display
+        self.state_manager = state_manager
+
+    def run(self) -> None:
+        """Method that will run display the results page of the GUI"""
         self.display.fill(BLACK)
         text1surface = draw_text("Results", titlefont, YELLOW)
         text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 10))
@@ -138,17 +149,19 @@ class results:
         self.display.blit(results5, results5rect)
 
 
-class questionnaire:
-    def __init__(self, display, gameStateManager):
+class Questionnaire:
+    """Class that will create an object for the questionnaire class and display the questionnaire
+    page for the GUI"""
+    def __init__(self, display, state_manager):
         self.display = display
-        self.gameStateManager = gameStateManager
+        self.state_manager = state_manager
+        self.current_error_message = None
 
-
-    # order of questions =year, runtime, genre, director, actor
-    def run(self):
+    def run(self) -> None:
+        """Display and update the questionnaire page for the GUI"""
         self.display.fill(BLACK)
-        text1surface = draw_text("Please answer the following questions (press enter for each text box entry)", descriptionfont,
-                                YELLOW)
+        text1surface = draw_text("Please answer the following questions "
+                                 "(press enter for each text box entry)", descriptionfont, YELLOW)
         text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, 10))
         self.display.blit(text1surface, text1rect)
 
@@ -165,11 +178,13 @@ class questionnaire:
         question3rect = question3surf.get_rect(center=(SCREEN_SIZE[0] // 2, 280))
         self.display.blit(question3surf, question3rect)
 
-        question4surf = draw_text("Enter your preferred director", descriptionfont, YELLOW)
+        question4surf = draw_text("Enter your preferred director (optional, press enter "
+                                  "in empty entry)", descriptionfont, YELLOW)
         question4rect = question4surf.get_rect(center=(SCREEN_SIZE[0] // 2, 360))
         self.display.blit(question4surf, question4rect)
 
-        question5surf = draw_text("Enter your 3 preferred actors", descriptionfont, YELLOW)
+        question5surf = draw_text("Enter your 3 preferred actors (optional, press enter "
+                                  "in empty entry)", descriptionfont, YELLOW)
         question5rect = question5surf.get_rect(center=(SCREEN_SIZE[0] // 2, 440))
         self.display.blit(question5surf, question5rect)
 
@@ -179,30 +194,35 @@ class questionnaire:
 
         MANAGER.draw_ui(self.display)
 
-    def errormessage(self, signal: int):
-        error = draw_text("ERROR: Please answer all questions ", descriptionfont,
-                              BLACK)
+        if self.current_error_message:
+            errorsurf = draw_text(self.current_error_message, descriptionfont, YELLOW)
+            errorrect = errorsurf.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
+            self.display.blit(errorsurf, errorrect)
+
+    def errormessage(self, signal: int) -> None:
+        """Will update the error message that will be displayed on the questionnaire page"""
         if signal == 0:
-            error = draw_text("ERROR: Please answer all questions ", descriptionfont,
-                              YELLOW)
+            self.current_error_message = "error: answer all questions"
         elif signal == 1:
-            error = draw_text("Please enter an integer for entries 1 and 2", descriptionfont,
-                             YELLOW)
+            self.current_error_message = "please enter an integer for entries 1 and 2"
         elif signal == 2:
-            error = draw_text("ERROR: too many inputs, please restart, clear all entries and try again",
-                              descriptionfont, YELLOW)
-        errorrect = error.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
-        self.display.fill(BLACK, errorrect)
-        self.display.blit(error, errorrect)
-        pygame.display.update(errorrect)
+            self.current_error_message = "too many inputs, restart and clear all entries"
+        else:
+            self.current_error_message = None
+
+    def clear_error_message(self) -> None:
+        """Set the error page to nothing if there is no error"""
+        self.current_error_message = None
 
 
-
-class start:
-    def __init__(self, display, gameStateManager):
+class Start:
+    """Class that will create the starting page of the GUI"""
+    def __init__(self, display, state_manager):
         self.display = display
-        self.gameStateManager = gameStateManager
-    def run(self):
+        self.state_manager = state_manager
+
+    def run(self) -> None:
+        """Method that will update the starting page screen of the GUI"""
         self.display.fill(BLACK)
 
         keys = pygame.key.get_pressed()
@@ -228,15 +248,23 @@ class start:
         self.display.blit(continue_surface, continue_rect)
 
         if keys[pygame.K_SPACE]:
-            self.gameStateManager.set_state("questionnaire")
+            self.state_manager.set_state("questionnaire")
 
-class GameStateManager:
+
+class StateManager:
+    """Class that will create the object to allow transition between different pages of the
+    program"""
     def __init__(self, currentstate):
         self.currentstate = currentstate
-    def get_state(self):
+
+    def get_state(self) -> None:
+        """returns the current page being displayed"""
         return self.currentstate
-    def set_state(self, state):
+
+    def set_state(self, state) -> None:
+        """changes the current page"""
         self.currentstate = state
+
 
 if __name__ == "__main__":
     main = Main()
