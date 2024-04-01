@@ -1,8 +1,25 @@
-""""CSC111 Project 2:
+""""CSC111 Winter 2024 Project 2: Movie Recommendation System
+
+Module Description
+==================
+This Python module is weighted decision module where get the data for the
+movies and user input and then create movie recommendation based on the given
+data.
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of students
+taking CSC111 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC111 materials,
+please consult our Course Syllabus.
+
+This file is Copyright (c) 2024 Toryn Chua, Jacob Keluthara, Yeonjun Kim, Dan Kim.
 """
 from __future__ import annotations
-import csv
 from typing import Any, Optional
+from data_computations import csv_to_object
 
 
 class Tree:
@@ -87,48 +104,49 @@ class Tree:
 
 def build_decision_tree(file: str) -> Tree:
     """Build a decision tree storing the movie data from the given file.
+
+    For the given file, each line should be in this format:
+    Poster_Link,Series_Title,Released_Year,Certificate,Runtime,Genre,IMDB_Rating,Overview,Meta_score,Director,
+    Star1,Star2,Star3,Star4,No_of_Votes,Gross
     """
     tree = Tree('', [])  # The start of a decision tree
 
-    with open(file, encoding='utf-8') as csv_file:
-        reader = csv.reader(csv_file)
-        next(reader)
+    movies = csv_to_object(file)
 
-        for row in reader:
-            row.pop(15)
-            row.pop(14)
-            row.pop(8)
-            row.pop(7)
-            row.pop(3)
-            row.pop(0)
-            row.append(row.pop(0))
-            row.append(row.pop(3))
-            # at the end we got Released_Year,Runtime,Genre,Director,Star1,Star2,Star3,Star4,Series_Title,IMDB_Rating
+    for movie in movies:
+        # Removing one's digit to make group and set the range of years.
+        # 1920s, 1930s, 1940s.... (In real code, it is saved as int and there is no 's' at the end.)
+        year = movie.release_year - (movie.release_year % 10)
 
-            # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
-            year = int(row[0]) - (int(row[0]) % 10)
+        # The same method for runtime. Given runtime = 155 min turn to 120.
+        runtime = movie.runtime
 
-            runtime = int(row[1][:-4])
+        # 0 ~ 59, 60 ~ 119, 120 ~ 179, 180 ~ 239, 240 ~ 299, 300 ~ 359...
+        # The lowest number for each range will be stored.
+        i = 1
+        while True:
+            if runtime - (60 * i) < 0:
+                runtime = 60 * (i - 1)
+                break
+            i += 1
 
-            i = 1
-            while True:     # 0 ~ 59, 60 ~ 119, 120 ~ 179, 180 ~ 239, 240 ~ 299, 300 ~ 359...
-                if runtime - (60 * i) < 0:
-                    runtime = 60 * (i - 1)
-                    break
-                i += 1
+        director = movie.director.lower()
 
-            genre = row[2].split(", ")
+        stars = movie.stars
+        stars.add("")
 
-            director = row[3]
+        title = movie.title
+        rating = movie.imdb_rating
 
-            actor = [row[4], row[5], row[6], row[7]]
-
-            for g in genre:
-                tree.insert_sequence([year, runtime, g.lower(), "", "", row[8], float(row[9])])
-                tree.insert_sequence([year, runtime, g.lower(), director.lower(), "", row[8], float(row[9])])
-                for a in actor:
-                    tree.insert_sequence([year, runtime, g.lower(), director.lower(), a.lower(), row[8], float(row[9])])
-                    tree.insert_sequence([year, runtime, g.lower(), "", a.lower(), row[8], float(row[9])])
+        # Since there is cases where user don't put any director or actors for their input, we added empty cases for
+        # each movie saved in our tree.
+        # We added the case of (no director, no actor), (no direct, actor), (director, actor), (director, no actor).
+        # In the file, since each movie has max 3 genre, and 4 actors, at the movie's title degree of the tree, ther
+        # -e are duplications.
+        for g in movie.genre:
+            for s in stars:
+                tree.insert_sequence([year, runtime, g.lower(), director, s.lower(), title, rating])
+                tree.insert_sequence([year, runtime, g.lower(), "", s.lower(), title, rating])
     return tree
 
 
@@ -138,7 +156,10 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
     """
     tree_so_far = build_decision_tree(movie_file)
 
+    # Removing all the subtrees that does not match with user's input.
     tree_so_far.convert_to_subtree(int(user_input["year"]) - (int(user_input["year"]) % 10))
+
+    # Setting user's input as range to match with saved runtime in the decision tree.
     runtime = int(user_input["runtime"])
     i = 1
     while True:  # 0 ~ 59, 60 ~ 119, 120 ~ 179, 180 ~ 239, 240 ~ 299, 300 ~ 359...
@@ -146,21 +167,27 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
             runtime = 60 * (i - 1)
             break
         i += 1
+
     tree_so_far.convert_to_subtree(runtime)
     tree_so_far.convert_to_subtree(user_input["genre"].lower())
     tree_so_far.convert_to_subtree(user_input["director"].lower())
 
-    if not tree_so_far.subtrees:
+    if not tree_so_far.subtrees:  # The case when there is no matching movies.
         return get_top_5_movies(movie_file)
     else:
         movies_so_far = {}
         user_pref_actors = [user_input["actor1"].lower(), user_input["actor2"].lower(), user_input["actor3"].lower()]
+        movie_titles = []
+
+        # Get the movies that has matching actors with user's input and save their rating as dictionary.
+        # This dictionary removes all the duplicant created in the decision tree.
         for i in range(len(tree_so_far.subtrees)):
             for user_a in user_pref_actors:
                 if user_a == tree_so_far.subtrees[i].root:
                     for m in tree_so_far.subtrees[i].subtrees:
                         movies_so_far[m.root] = m.subtrees[0].root
-        movie_titles = []
+
+        # Using dictionary, sort the movies by the rating.
         for key in movies_so_far:
             if not movie_titles:
                 movie_titles.append(key)
@@ -173,13 +200,15 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
                         break
                 if not added:
                     movie_titles.append(key)
-        if len(movie_titles) > 5:
+
+        if len(movie_titles) > 5:  # Since there is more than 5 movies, leave only top 5 movies.
             for _ in range(len(movie_titles) - 5):
                 movie_titles.pop()
-        elif len(movie_titles) < 5:
+        elif len(movie_titles) < 5:  # Since there is less then 5 movies, add top rating movies.
             m = get_top_5_movies(movie_file)
             for _ in range(5 - len(movie_titles)):
                 movie_titles.append(m.pop())
+
         return movie_titles
 
 
@@ -187,24 +216,20 @@ def get_top_5_movies(movie_file: str) -> list[str]:
     """Return top 5 movies with the highest ratings.
     """
     movies_so_far = []
-    with open(movie_file, encoding='utf-8') as csv_file:
-        reader = csv.reader(csv_file)
-        next(reader)
-        for row in reader:
-            rating = float(row[6])
-            movies_so_far.append((row[1], rating))
-
+    movies = csv_to_object(movie_file)
+    for movie in movies:
+        movies_so_far.append((movie.title, movie.imdb_rating))
     movies_so_far.sort(key=lambda x: x[1], reverse=True)
     top_5 = movies_so_far[:5]
 
-    top_5_titles = [movie[0] for movie in top_5]
+    top_5_titles = [m[0] for m in top_5]
     return top_5_titles
 
 
 if __name__ == '__main__':
     import python_ta
     python_ta.check_all(config={
-        'extra-imports': ['csv'],
-        'allowed-io': ['build_decision_tree', 'recommendation_system', 'get_top_5_movies'],
+        'extra-imports': ['data_computations'],
+        'allowed-io': [],
         'max-line-length': 120
     })
