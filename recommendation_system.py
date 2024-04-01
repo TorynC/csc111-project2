@@ -22,6 +22,7 @@ import sys
 import pygame_gui
 from weighted_decision import recommendation_system
 
+# global variables and constants used throughout the program
 pygame.init()
 SCREEN_SIZE = (1000, 800)
 BLACK = (12, 11, 0)
@@ -65,8 +66,202 @@ def is_integer(userinput: int | str) -> bool:
         return False
 
 
+class StateManager:
+    """Class that will create the object to allow transition between different pages of the
+    program"""
+    def __init__(self, currentstate):
+        self.currentstate = currentstate
+
+    def get_state(self) -> None:
+        """returns the current page being displayed"""
+        return self.currentstate
+
+    def set_state(self, state) -> None:
+        """changes the current page"""
+        self.currentstate = state
+
+
+class Pages:
+    """An abstract class representing each page for the program
+
+    Instance Attributes:
+        - display: the screen that will display the pages
+        - state_manager: object that will handle transition between different pages
+    """
+    display: pygame.Surface
+    state_manager: StateManager
+
+    def __init__(self, display, state_manager):
+        self.display = display
+        self.state_manager = state_manager
+
+    def run(self) -> None:
+        """Abstract method that will run each page"""
+        raise NotImplemented
+
+
+class Results(Pages):
+    """Class that will create the results page of the GUI"""
+
+    def run(self) -> None:
+        """Method that will run display the results page of the GUI"""
+        self.display.fill(BLACK)
+        text1surface = draw_text("Results", titlefont, YELLOW)
+        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 10))
+        self.display.blit(text1surface, text1rect)
+
+        exitmessage = draw_text("Press BACKSPACE to exit", descriptionfont, YELLOW)
+        exitrect = exitmessage.get_rect(center=(SCREEN_SIZE[0] // 2, 700))
+        self.display.blit(exitmessage, exitrect)
+
+        results1 = draw_text(to_be_printed[0], descriptionfont, YELLOW)
+        results1rect = results1.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
+        self.display.blit(results1, results1rect)
+
+        results2 = draw_text(to_be_printed[1], descriptionfont, YELLOW)
+        results2rect = results2.get_rect(center=(SCREEN_SIZE[0] // 2, 300))
+        self.display.blit(results2, results2rect)
+
+        results3 = draw_text(to_be_printed[2], descriptionfont, YELLOW)
+        results3rect = results3.get_rect(center=(SCREEN_SIZE[0] // 2, 400))
+        self.display.blit(results3, results3rect)
+
+        results4 = draw_text(to_be_printed[3], descriptionfont, YELLOW)
+        results4rect = results4.get_rect(center=(SCREEN_SIZE[0] // 2, 500))
+        self.display.blit(results4, results4rect)
+
+        results5 = draw_text(to_be_printed[4], descriptionfont, YELLOW)
+        results5rect = results5.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
+        self.display.blit(results5, results5rect)
+
+
+class Questionnaire(Pages):
+    """Class that will create an object for the questionnaire class and display the questionnaire
+    page for the GUI
+
+    Instance Attributes:
+        - current_error_message: The
+    """
+    current_error_message: str
+
+    def __init__(self, display, state_manager):
+        Pages.__init__(self, display, state_manager)
+        self.current_error_message = ''
+
+    def run(self) -> None:
+        """Display and update the questionnaire page for the GUI"""
+        self.display.fill(BLACK)
+        text1surface = draw_text("Please answer the following questions "
+                                 "(press enter for each text box entry)", descriptionfont, YELLOW)
+        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, 10))
+        self.display.blit(text1surface, text1rect)
+
+        question1surf = draw_text("Enter your preferred release year of movies", descriptionfont,
+                                  YELLOW)
+        question1rect = question1surf.get_rect(center=(SCREEN_SIZE[0] // 2, 120))
+        self.display.blit(question1surf, question1rect)
+
+        question2surf = draw_text("Enter your preferred runtime (minutes)", descriptionfont, YELLOW)
+        question2rect = question2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
+        self.display.blit(question2surf, question2rect)
+
+        question3surf = draw_text("Enter your preferred genre", descriptionfont, YELLOW)
+        question3rect = question3surf.get_rect(center=(SCREEN_SIZE[0] // 2, 280))
+        self.display.blit(question3surf, question3rect)
+
+        question4surf = draw_text("Enter your preferred director (optional, press enter "
+                                  "in empty entry)", descriptionfont, YELLOW)
+        question4rect = question4surf.get_rect(center=(SCREEN_SIZE[0] // 2, 360))
+        self.display.blit(question4surf, question4rect)
+
+        question5surf = draw_text("Enter your 3 preferred actors (optional, press enter "
+                                  "in empty entry)", descriptionfont, YELLOW)
+        question5rect = question5surf.get_rect(center=(SCREEN_SIZE[0] // 2, 440))
+        self.display.blit(question5surf, question5rect)
+
+        text2surf = draw_text("Press ESC to restart/Press TAB to continue", descriptionfont, YELLOW)
+        text2rect = text2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 550))
+        self.display.blit(text2surf, text2rect)
+
+        MANAGER.draw_ui(self.display)
+
+        if self.current_error_message:
+            errorsurf = draw_text(self.current_error_message, descriptionfont, YELLOW)
+            errorrect = errorsurf.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
+            self.display.blit(errorsurf, errorrect)
+
+    def errormessage(self, signal: int) -> None:
+        """Will update the error message that will be displayed on the questionnaire page"""
+        if signal == 0:
+            self.current_error_message = "Error: answer all questions"
+        elif signal == 1:
+            self.current_error_message = "Error: please enter an integer for entries 1 and 2"
+        elif signal == 2:
+            self.current_error_message = "Error: too many inputs, restart and clear all entries"
+        elif signal == 3:
+            self.current_error_message = "Error: entries 1, 2 and 3 must not be empty"
+        else:
+            self.current_error_message = ''
+
+    def clear_error_message(self) -> None:
+        """Set the error page to nothing if there is no error"""
+        self.current_error_message = ''
+
+
+class Start(Pages):
+    """Class that will create the starting page of the GUI"""
+
+    def run(self) -> None:
+        """Method that will update the starting page screen of the GUI"""
+        self.display.fill(BLACK)
+
+        keys = pygame.key.get_pressed()
+        titlesurface = draw_text("IMDb Movie Recommendation System", titlefont,
+                                 YELLOW)
+        titlerect = titlesurface.get_rect(center=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 8))
+        self.display.blit(titlesurface, titlerect)
+        description = ("Hello, welcome to the CSC111 IMDb Movie Recommendation System! \n"
+                       "You will answer a few questions from a questionnaire \n"
+                       "and based on your chosen preferences, the program will recommend \n"
+                       "the 5 most suitable movies for you from a database of the top 1000 \n"
+                       "highest rated movies on IMDb. No personal information will be required.")
+        collection = description.splitlines()
+        curr_pos = 300
+        for words in collection:
+            word_surface = draw_text(words, descriptionfont, YELLOW)
+            word_rect = word_surface.get_rect(center=(SCREEN_SIZE[0] // 2, curr_pos))
+            self.display.blit(word_surface, word_rect)
+            curr_pos += 30
+            self.display.blit(word_surface, word_rect)
+        continue_surface = draw_text("Press SPACE to continue", descriptionfont, YELLOW)
+        continue_rect = continue_surface.get_rect(center=(SCREEN_SIZE[0] // 2, curr_pos + 100))
+        self.display.blit(continue_surface, continue_rect)
+
+        if keys[pygame.K_SPACE]:
+            self.state_manager.set_state("questionnaire")
+
+
 class Main:
-    """Class that creates an object of the main program"""
+    """Class that creates an object of the main program
+
+    Instance Attributes:
+        - screen: The main screen that will be used to display the page
+        - state_manager: object that will handle transitioning between pages
+        - start: object for the main page of the program
+        - questionnaire: object for the 2nd page of the program (questionnaire for user)
+        - outputs: the results to be displayed to the user
+        - results: object that will create the results page of the program
+        - inputs: list that will handle the initial entries from the user
+        - states: dictionary that stores the different pages of the program"""
+    screen: pygame.Surface
+    state_manager: StateManager
+    start: Start
+    questionnaire: Questionnaire
+    outputs: dict[str, str]
+    results: Results
+    inputs: list[str]
+    states: dict
+
     def __init__(self):
         self.screen = SCREEN
         self.state_manager = StateManager("start")
@@ -130,160 +325,3 @@ class Main:
             self.states[self.state_manager.get_state()].run()
 
             pygame.display.update()
-
-
-class Results:
-    """Class that will create the results page of the GUI"""
-    def __init__(self, display, state_manager):
-        self.display = display
-        self.state_manager = state_manager
-
-    def run(self) -> None:
-        """Method that will run display the results page of the GUI"""
-        self.display.fill(BLACK)
-        text1surface = draw_text("Results", titlefont, YELLOW)
-        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 10))
-        self.display.blit(text1surface, text1rect)
-
-        exitmessage = draw_text("Press BACKSPACE to exit", descriptionfont, YELLOW)
-        exitrect = exitmessage.get_rect(center=(SCREEN_SIZE[0] // 2, 700))
-        self.display.blit(exitmessage, exitrect)
-
-        results1 = draw_text(to_be_printed[0], descriptionfont, YELLOW)
-        results1rect = results1.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
-        self.display.blit(results1, results1rect)
-
-        results2 = draw_text(to_be_printed[1], descriptionfont, YELLOW)
-        results2rect = results2.get_rect(center=(SCREEN_SIZE[0] // 2, 300))
-        self.display.blit(results2, results2rect)
-
-        results3 = draw_text(to_be_printed[2], descriptionfont, YELLOW)
-        results3rect = results3.get_rect(center=(SCREEN_SIZE[0] // 2, 400))
-        self.display.blit(results3, results3rect)
-
-        results4 = draw_text(to_be_printed[3], descriptionfont, YELLOW)
-        results4rect = results4.get_rect(center=(SCREEN_SIZE[0] // 2, 500))
-        self.display.blit(results4, results4rect)
-
-        results5 = draw_text(to_be_printed[4], descriptionfont, YELLOW)
-        results5rect = results5.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
-        self.display.blit(results5, results5rect)
-
-
-class Questionnaire:
-    """Class that will create an object for the questionnaire class and display the questionnaire
-    page for the GUI"""
-    def __init__(self, display, state_manager):
-        self.display = display
-        self.state_manager = state_manager
-        self.current_error_message = None
-
-    def run(self) -> None:
-        """Display and update the questionnaire page for the GUI"""
-        self.display.fill(BLACK)
-        text1surface = draw_text("Please answer the following questions "
-                                 "(press enter for each text box entry)", descriptionfont, YELLOW)
-        text1rect = text1surface.get_rect(center=(SCREEN_SIZE[0] // 2, 10))
-        self.display.blit(text1surface, text1rect)
-
-        question1surf = draw_text("Enter your preferred release year of movies", descriptionfont,
-                                  YELLOW)
-        question1rect = question1surf.get_rect(center=(SCREEN_SIZE[0] // 2, 120))
-        self.display.blit(question1surf, question1rect)
-
-        question2surf = draw_text("Enter your preferred runtime (minutes)", descriptionfont, YELLOW)
-        question2rect = question2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
-        self.display.blit(question2surf, question2rect)
-
-        question3surf = draw_text("Enter your preferred genre", descriptionfont, YELLOW)
-        question3rect = question3surf.get_rect(center=(SCREEN_SIZE[0] // 2, 280))
-        self.display.blit(question3surf, question3rect)
-
-        question4surf = draw_text("Enter your preferred director (optional, press enter "
-                                  "in empty entry)", descriptionfont, YELLOW)
-        question4rect = question4surf.get_rect(center=(SCREEN_SIZE[0] // 2, 360))
-        self.display.blit(question4surf, question4rect)
-
-        question5surf = draw_text("Enter your 3 preferred actors (optional, press enter "
-                                  "in empty entry)", descriptionfont, YELLOW)
-        question5rect = question5surf.get_rect(center=(SCREEN_SIZE[0] // 2, 440))
-        self.display.blit(question5surf, question5rect)
-
-        text2surf = draw_text("Press ESC to restart/Press TAB to continue", descriptionfont, YELLOW)
-        text2rect = text2surf.get_rect(center=(SCREEN_SIZE[0] // 2, 550))
-        self.display.blit(text2surf, text2rect)
-
-        MANAGER.draw_ui(self.display)
-
-        if self.current_error_message:
-            errorsurf = draw_text(self.current_error_message, descriptionfont, YELLOW)
-            errorrect = errorsurf.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
-            self.display.blit(errorsurf, errorrect)
-
-    def errormessage(self, signal: int) -> None:
-        """Will update the error message that will be displayed on the questionnaire page"""
-        if signal == 0:
-            self.current_error_message = "Error: answer all questions"
-        elif signal == 1:
-            self.current_error_message = "Error: please enter an integer for entries 1 and 2"
-        elif signal == 2:
-            self.current_error_message = "Error: too many inputs, restart and clear all entries"
-        elif signal == 3:
-            self.current_error_message = "Error: entries 1, 2 and 3 must not be empty"
-        else:
-            self.current_error_message = None
-
-    def clear_error_message(self) -> None:
-        """Set the error page to nothing if there is no error"""
-        self.current_error_message = None
-
-
-class Start:
-    """Class that will create the starting page of the GUI"""
-    def __init__(self, display, state_manager):
-        self.display = display
-        self.state_manager = state_manager
-
-    def run(self) -> None:
-        """Method that will update the starting page screen of the GUI"""
-        self.display.fill(BLACK)
-
-        keys = pygame.key.get_pressed()
-        titlesurface = draw_text("IMDb Movie Recommendation System", titlefont,
-                                 YELLOW)
-        titlerect = titlesurface.get_rect(center=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 8))
-        self.display.blit(titlesurface, titlerect)
-        description = ("Hello, welcome to the CSC111 IMDb Movie Recommendation System! \n"
-                       "You will answer a few questions from a questionnaire \n"
-                       "and based on your chosen preferences, the program will recommend \n"
-                       "the 5 most suitable movies for you from a database of the top 1000 \n"
-                       "highest rated movies on IMDb. No personal information will be required.")
-        collection = description.splitlines()
-        curr_pos = 300
-        for words in collection:
-            word_surface = draw_text(words, descriptionfont, YELLOW)
-            word_rect = word_surface.get_rect(center=(SCREEN_SIZE[0] // 2, curr_pos))
-            self.display.blit(word_surface, word_rect)
-            curr_pos += 30
-            self.display.blit(word_surface, word_rect)
-        continue_surface = draw_text("Press SPACE to continue", descriptionfont, YELLOW)
-        continue_rect = continue_surface.get_rect(center=(SCREEN_SIZE[0] // 2, curr_pos + 100))
-        self.display.blit(continue_surface, continue_rect)
-
-        if keys[pygame.K_SPACE]:
-            self.state_manager.set_state("questionnaire")
-
-
-class StateManager:
-    """Class that will create the object to allow transition between different pages of the
-    program"""
-    def __init__(self, currentstate):
-        self.currentstate = currentstate
-
-    def get_state(self) -> None:
-        """returns the current page being displayed"""
-        return self.currentstate
-
-    def set_state(self, state) -> None:
-        """changes the current page"""
-        self.currentstate = state

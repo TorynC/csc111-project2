@@ -25,19 +25,4 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod(verbose=True)
-
-    import python_ta
-    import python_ta.contracts
-
-    python_ta.contracts.DEBUG_CONTRACTS = False
-    python_ta.contracts.check_all_contracts()
-    python_ta.check_all(config={
-        'extra-imports': ['python_ta.contracts', 'recommendation_system'],
-        'allowed-io': [],
-        'max_line_length': 120,
-        'disable': []
-    })
     run()
