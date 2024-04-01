@@ -99,8 +99,8 @@ class Main:
                                     self.outputs["actor2"] = self.inputs[5]
                                     self.outputs["actor3"] = self.inputs[6]
 
-                                    to_be_printed.extend(recommendation_system("data/imdb_top_1000.csv",
-                                                                               self.outputs))
+                                    to_be_printed.extend(recommendation_system
+                                                         ("data/imdb_top_1000.csv", self.outputs))
                                     self.state_manager.set_state("results")
                             else:
                                 self.questionnaire.errormessage(1)
@@ -270,4 +270,3 @@ class StateManager:
     def set_state(self, state) -> None:
         """changes the current page"""
         self.currentstate = state
-
