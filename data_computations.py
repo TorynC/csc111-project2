@@ -45,7 +45,7 @@ def csv_to_object(file_name: str) -> list[Movie]:
     """A function that will take in a review file and output a list of Movie objects."""
 
     output_lst = []
-    with open(file_name, 'r') as file:
+    with open(file_name, encoding='utf-8') as file:
         reader = csv.reader(file)
         next(reader)
         for row in reader:
