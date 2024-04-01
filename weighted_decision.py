@@ -217,7 +217,6 @@ class Tree:
         """
         return self._root
 
-
 def build_decision_tree(file: str) -> Tree:
     """Build a decision tree storing the movie data from the given file.
     """
@@ -232,11 +231,11 @@ def build_decision_tree(file: str) -> Tree:
             row.pop(14)
             row.pop(8)
             row.pop(7)
-            row.pop(6)
             row.pop(3)
             row.pop(0)
             row.append(row.pop(0))
-            # at the end we got Released_Year,Runtime,Genre,Director,Star1,Star2,Star3,Star4,Series_Title
+            row.append(row.pop(3))
+            # at the end we got Released_Year,Runtime,Genre,Director,Star1,Star2,Star3,Star4,Series_Title,IMDB_Rating
 
             # if released year is 1927, then the year is 1920 which means 1920 ~ 1930.
             year = int(row[0]) - (int(row[0]) % 10)
@@ -257,11 +256,11 @@ def build_decision_tree(file: str) -> Tree:
             actor = [row[4], row[5], row[6], row[7]]
 
             for g in genre:
-                tree.insert_sequence([year, runtime, g.lower(), "", "", row[8]])
-                tree.insert_sequence([year, runtime, g.lower(), director.lower(), "", row[8]])
+                tree.insert_sequence([year, runtime, g.lower(), "", "", row[8], float(row[9])])
+                tree.insert_sequence([year, runtime, g.lower(), director.lower(), "", row[8], float(row[9])])
                 for a in actor:
-                    tree.insert_sequence([year, runtime, g.lower(), director.lower(), a.lower(), row[8]])
-                    tree.insert_sequence([year, runtime, g.lower(), "", a.lower(), row[8]])
+                    tree.insert_sequence([year, runtime, g.lower(), director.lower(), a.lower(), row[8], float(row[9])])
+                    tree.insert_sequence([year, runtime, g.lower(), "", a.lower(), row[8], float(row[9])])
     return tree
 
 
@@ -286,23 +285,34 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
     if not tree_so_far.subtrees:
         return get_top_5_movies(movie_file)
     else:
-        movies_so_far = []
+        movies_so_far = {}
         user_pref_actors = [user_input["actor1"].lower(), user_input["actor2"].lower(), user_input["actor3"].lower()]
         for i in range(len(tree_so_far.subtrees)):
             for user_a in user_pref_actors:
                 if user_a == tree_so_far.subtrees[i].root:
                     for m in tree_so_far.subtrees[i].subtrees:
-                        movies_so_far.append(m.root)
-        movies_so_far = set(movies_so_far)
-        movies_so_far = list(movies_so_far)
-        if len(movies_so_far) > 5:
-            for _ in range(len(movies_so_far) - 5):
-                movies_so_far.pop()
-        elif len(movies_so_far) < 5:
+                        movies_so_far[m.root] = m.subtrees[0].root
+        movie_titles = []
+        for key in movies_so_far:
+            if not movie_titles:
+                movie_titles.append(key)
+            else:
+                added = False
+                for i in range(len(movie_titles)):
+                    if movies_so_far[movie_titles[i]] < movies_so_far[key]:
+                        movie_titles.insert(i, key)
+                        added = True
+                        break
+                if not added:
+                    movie_titles.append(key)
+        if len(movie_titles) > 5:
+            for _ in range(len(movie_titles) - 5):
+                movie_titles.pop()
+        elif len(movie_titles) < 5:
             m = get_top_5_movies(movie_file)
-            for _ in range(5 - len(movies_so_far)):
-                movies_so_far.append(m.pop())
-        return movies_so_far
+            for _ in range(5 - len(movie_titles)):
+                movie_titles.append(m.pop())
+        return movie_titles
 
 
 def get_top_5_movies(movie_file: str) -> list[str]:
