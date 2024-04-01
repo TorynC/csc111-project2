@@ -155,7 +155,10 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
     """
     tree_so_far = build_decision_tree(movie_file)
 
+    # Removing all the subtrees that does not match with user's input.
     tree_so_far.convert_to_subtree(int(user_input["year"]) - (int(user_input["year"]) % 10))
+
+    # Setting user's input as range to match with saved runtime in the decision tree.
     runtime = int(user_input["runtime"])
     i = 1
     while True:  # 0 ~ 59, 60 ~ 119, 120 ~ 179, 180 ~ 239, 240 ~ 299, 300 ~ 359...
@@ -163,21 +166,27 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
             runtime = 60 * (i - 1)
             break
         i += 1
+
     tree_so_far.convert_to_subtree(runtime)
     tree_so_far.convert_to_subtree(user_input["genre"].lower())
     tree_so_far.convert_to_subtree(user_input["director"].lower())
 
-    if not tree_so_far.subtrees:
+    if not tree_so_far.subtrees: # The case when there is no matching movies.
         return get_top_5_movies(movie_file)
     else:
         movies_so_far = {}
         user_pref_actors = [user_input["actor1"].lower(), user_input["actor2"].lower(), user_input["actor3"].lower()]
+        movie_titles = []
+
+        # Get the movies that has matching actors with user's input and save their rating as dictionary.
+        # This dictionary removes all the duplicant created in the decision tree.
         for i in range(len(tree_so_far.subtrees)):
             for user_a in user_pref_actors:
                 if user_a == tree_so_far.subtrees[i].root:
                     for m in tree_so_far.subtrees[i].subtrees:
                         movies_so_far[m.root] = m.subtrees[0].root
-        movie_titles = []
+
+        # Using dictionary, sort the movies by the rating.
         for key in movies_so_far:
             if not movie_titles:
                 movie_titles.append(key)
@@ -190,13 +199,15 @@ def recommendation_system(movie_file: str, user_input: dict) -> list[str]:
                         break
                 if not added:
                     movie_titles.append(key)
-        if len(movie_titles) > 5:
+
+        if len(movie_titles) > 5:   # Since there is more than 5 movies, leave only top 5 movies.
             for _ in range(len(movie_titles) - 5):
                 movie_titles.pop()
-        elif len(movie_titles) < 5:
+        elif len(movie_titles) < 5: # Since there is less then 5 movies, add top rating movies.
             m = get_top_5_movies(movie_file)
             for _ in range(5 - len(movie_titles)):
                 movie_titles.append(m.pop())
+
         return movie_titles
 
 
