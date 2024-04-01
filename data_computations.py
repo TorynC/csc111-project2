@@ -20,7 +20,17 @@ import csv
 
 
 class Movie:
-    """Class that represents one movie."""
+    """Class that represents one movie.
+
+    Instance Attributes:
+        - title: title of the movie
+        - release_year: released year for the movie
+        - imdb_rating: movie's rating on the imdb website
+        - runtime: running time of the movie
+        - genre: genre that movie contians
+        - director: director of the movie
+        - stars: stars acted on the movie
+    """
 
     title: str
     release_year: int
