@@ -69,7 +69,7 @@ class Main:
                     self.inputs.append(event.text)
                     print(self.inputs)
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_ESCAPE and self.gameStateManager.get_state() == "questionnaire":
                         self.gameStateManager.set_state("start")
                         self.inputs.clear()
                     if event.key == pygame.K_TAB:
@@ -116,6 +116,26 @@ class results:
         exitmessage = draw_text("Press BACKSPACE to exit", descriptionfont, YELLOW)
         exitrect = exitmessage.get_rect(center=(SCREEN_SIZE[0] // 2, 700))
         self.display.blit(exitmessage, exitrect)
+
+        results1 = draw_text(to_be_printed[0], descriptionfont, YELLOW)
+        results1rect = results1.get_rect(center=(SCREEN_SIZE[0] // 2, 200))
+        self.display.blit(results1, results1rect)
+
+        results2 = draw_text(to_be_printed[1], descriptionfont, YELLOW)
+        results2rect = results2.get_rect(center=(SCREEN_SIZE[0] // 2, 300))
+        self.display.blit(results2, results2rect)
+
+        results3 = draw_text(to_be_printed[2], descriptionfont, YELLOW)
+        results3rect = results3.get_rect(center=(SCREEN_SIZE[0] // 2, 400))
+        self.display.blit(results3, results3rect)
+
+        results4 = draw_text(to_be_printed[3], descriptionfont, YELLOW)
+        results4rect = results4.get_rect(center=(SCREEN_SIZE[0] // 2, 500))
+        self.display.blit(results4, results4rect)
+
+        results5 = draw_text(to_be_printed[4], descriptionfont, YELLOW)
+        results5rect = results5.get_rect(center=(SCREEN_SIZE[0] // 2, 600))
+        self.display.blit(results5, results5rect)
 
 
 class questionnaire:
